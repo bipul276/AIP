@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Schedule | Blood Donation</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fcfcfc;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #e74c3c;
+      margin-bottom: 30px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      cursor: pointer;
+      border: none;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    #msg {
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Update Your Schedule</h2>
+    <form id="updateForm">
+      <input type="email" id="email" placeholder="Email" readonly required>
+      <input type="datetime-local" id="datetime" required>
+      <button type="submit">Update</button>
+    </form>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('updateForm');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const datetime = document.getElementById('datetime').value;
+
+      const response = await fetch(`/BloodDonationSystem/api/schedule`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, datetime, status: "Updated" })
+      });
+
+      const msg = document.getElementById('msg');
+      if (response.ok) {
+        msg.style.color = 'green';
+        msg.textContent = "Schedule updated successfully!";
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = "Error updating. Please try again.";
+      }
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    if (email) document.getElementById('email').value = email;
+  </script>
+</body>
+</html>

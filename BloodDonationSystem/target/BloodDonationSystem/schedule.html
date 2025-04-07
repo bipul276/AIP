@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blood Donation Schedule</title>
+  <style>
+    body { font-family: Arial; background: #f8f9fa; }
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    .msg-success {
+      color: green;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .action-buttons {
+      margin-top: 20px;
+    }
+    .action-buttons a {
+      display: inline-block;
+      margin: 10px 5px;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: white;
+      background-color: #3498db;
+      border-radius: 5px;
+    }
+    .action-buttons a:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Schedule Donation</h2>
+    <form id="scheduleForm">
+      <input type="email" id="email" placeholder="Email" required readonly>
+      <input type="datetime-local" id="datetime" required>
+      <button type="submit">Submit</button>
+    </form>
+
+    <p id="msg" class="msg-success" style="display: none;">Schedule saved successfully!</p>
+
+    <div class="action-buttons" id="actions" style="display: none;">
+      <a id="updateBtn" href="#">Update Schedule</a>
+      <a href="index.html">Return to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('scheduleForm');
+    const msg = document.getElementById('msg');
+    const actions = document.getElementById('actions');
+    const updateBtn = document.getElementById('updateBtn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const datetime = document.getElementById('datetime').value;
+
+      const response = await fetch('/BloodDonationSystem/api/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, datetime, status: "Scheduled" })
+      });
+
+      if (response.ok) {
+        msg.style.display = "block";
+        actions.style.display = "block";
+        updateBtn.href = `updateSchedule.html?email=${email}`;
+      } else {
+        msg.style.color = "red";
+        msg.textContent = "Error scheduling. Please try again.";
+        msg.style.display = "block";
+      }
+    });
+
+    // Autofill email from query string
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get('email');
+    if (emailParam) {
+      document.getElementById('email').value = emailParam;
+    }
+  </script>
+</body>
+</html>
